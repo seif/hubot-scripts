@@ -9,6 +9,8 @@
 #   HUBOT_TEAMCITY_PASSWORD = <password>
 #   HUBOT_TEAMCITY_HOSTNAME = <host : port>
 #   HUBOT_TEAMCITY_SCHEME = <http || https> defaults to http if not set.
+#   Optional environment variables:
+#   HUBOT_TEAMCITY_PRIVILEGED_ROLE = <Hubot role that is allowed to start builds> 
 #
 # Commands:
 #   hubot show me builds - Show status of currently running builds
@@ -35,6 +37,7 @@ module.exports = (robot) ->
   hostname = process.env.HUBOT_TEAMCITY_HOSTNAME
   scheme = process.env.HUBOT_TEAMCITY_SCHEME || "http"
   base_url = "#{scheme}://#{hostname}"
+  role = process.env.HUBOT_TEAMCITY_PRIVILEGED_ROLE
 
   buildTypes = []
 
@@ -180,6 +183,10 @@ module.exports = (robot) ->
     if buildTypeMatches?
       configuration = buildTypeMatches[1]
       project = buildTypeMatches[2]
+
+    if role and not msg.message.user.roles or msg.message.user.roles.indexOf(role) < 0
+      msg.send "You need to be a #{role} to start builds"
+      return
 
     mapNameToIdForBuildType msg, project, configuration, (msg, buildType) ->
       if not buildType
