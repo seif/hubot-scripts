@@ -141,15 +141,15 @@ module.exports = (robot) ->
       else
         issue =
           key: issues.key
-          summary: issues.fields.summary.value
+          summary: issues.fields.summary
           assignee: ->
-            if issues.fields.assignee.value != undefined
-              issues.fields.assignee.value.displayName
+            if issues.fields.assignee
+              issues.fields.assignee.displayName
             else
               "no assignee"
-          status: issues.fields.status.value.name
+          status: issues.fields.status.name
           fixVersion: ->
-            if issues.fields.fixVersions? and issues.fields.fixVersions.value != undefined
+            if issues.fields.fixVersions? and issues.fields.fixVersions.length > 0
               issues.fields.fixVersions.value.map((fixVersion) -> return fixVersion.name).join(", ")
             else
               "no fix version"
